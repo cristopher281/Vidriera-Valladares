@@ -5,6 +5,10 @@ import RawMaterialForm from './RawMaterialForm'
 export default function RawMaterialsTable() {
     const { materials, deleteMaterial, updateMaterial, addMaterial } = useRawMaterials()
     const [editing, setEditing] = useState(null)
+    const [searchTerm, setSearchTerm] = useState('')
+    const [statusFilter, setStatusFilter] = useState('all')
+    const [currentPage, setCurrentPage] = useState(1)
+    const itemsPerPage = 5
 
     const save = (m) => {
         if (m.id) updateMaterial(m.id, m)
@@ -18,32 +22,132 @@ export default function RawMaterialsTable() {
         }
     }
 
-    const getStockBadge = (material) => {
-        if (material.quantity === 0) return <span className="badge out">Agotado</span>
-        if (material.quantity < material.minStock) return <span className="badge low">Bajo</span>
-        return <span className="badge ok">Disponible</span>
+    const getStockStatus = (material) => {
+        if (material.quantity === 0) return { label: 'Crítico', class: 'critical' }
+        if (material.quantity < material.minStock) return { label: 'Bajo Stock', class: 'low' }
+        return { label: 'Disponible', class: 'available' }
     }
 
+    const getMaterialIcon = (name) => {
+        const lowerName = name.toLowerCase()
+
+        if (lowerName.includes('vidrio') || lowerName.includes('glass')) {
+            return (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 2v2h10V2h2v2h1c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2h1V2h2zm13 18V8H4v12h16z" />
+                </svg>
+            )
+        }
+        if (lowerName.includes('silicón') || lowerName.includes('silicon')) {
+            return (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
+                </svg>
+            )
+        }
+        if (lowerName.includes('aluminio') || lowerName.includes('perfil')) {
+            return (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 9V7c0-1.1-.9-2-2-2h-3c0-1.66-1.34-3-3-3S9 3.34 9 5H6c-1.1 0-2 .9-2 2v2c-1.66 0-3 1.34-3 3s1.34 3 3 3v4c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4c1.66 0 3-1.34 3-3s-1.34-3-3-3z" />
+                </svg>
+            )
+        }
+        if (lowerName.includes('empaque') || lowerName.includes('hule')) {
+            return (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="12" r="8" />
+                </svg>
+            )
+        }
+
+        return (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" />
+            </svg>
+        )
+    }
+
+    // Filter materials
+    const filteredMaterials = materials.filter(m => {
+        const matchesSearch = m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (m.category && m.category.toLowerCase().includes(searchTerm.toLowerCase()))
+
+        if (!matchesSearch) return false
+
+        if (statusFilter === 'all') return true
+        const status = getStockStatus(m)
+        return status.class === statusFilter
+    })
+
+    // Pagination
+    const totalPages = Math.ceil(filteredMaterials.length / itemsPerPage)
+    const startIndex = (currentPage - 1) * itemsPerPage
+    const paginatedMaterials = filteredMaterials.slice(startIndex, startIndex + itemsPerPage)
+
     return (
-        <div className="fade-in">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <h3 style={{ margin: 0 }}>Materiales Crudos</h3>
-                <button className="btn" onClick={() => setEditing({})}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ display: 'inline', marginRight: 6 }}>
+        <div className="raw-materials-container fade-in">
+            {/* Header */}
+            <div className="raw-materials-header">
+                <div>
+                    <h2 style={{ margin: 0, fontSize: '28px', color: 'var(--accent)' }}>Lista de Materias Primas</h2>
+                    <p style={{ margin: '8px 0 0', color: 'var(--muted)', fontSize: '14px' }}>
+                        Manage your raw materials inventory, track stock levels, and update availability for production.
+                    </p>
+                </div>
+                <button className="btn btn-icon" onClick={() => setEditing({})}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
                     </svg>
                     Nuevo Material
                 </button>
             </div>
 
+            {/* Form Modal */}
             {editing && (
-                <div className="card fade-in" style={{ marginBottom: '1.5rem' }}>
-                    <h4 style={{ marginTop: 0 }}>{editing.id ? 'Editar Material' : 'Nuevo Material'}</h4>
-                    <RawMaterialForm initial={editing} onSave={save} onCancel={() => setEditing(null)} />
+                <div className="modal-backdrop" onClick={() => setEditing(null)}>
+                    <div className="modal-card" onClick={e => e.stopPropagation()}>
+                        <h3 style={{ marginTop: 0 }}>{editing.id ? 'Editar Material' : 'Nuevo Material'}</h3>
+                        <RawMaterialForm initial={editing} onSave={save} onCancel={() => setEditing(null)} />
+                    </div>
                 </div>
             )}
 
-            {materials.length === 0 ? (
+            {/* Search and Filters */}
+            <div className="table-controls">
+                <div className="search-box">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                    </svg>
+                    <input
+                        type="text"
+                        placeholder="Search by material name or SKU..."
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                        className="input-search"
+                    />
+                </div>
+                <div className="filter-controls">
+                    <select
+                        className="select-filter"
+                        value={statusFilter}
+                        onChange={e => setStatusFilter(e.target.value)}
+                    >
+                        <option value="all">All Statuses</option>
+                        <option value="available">Disponible</option>
+                        <option value="low">Bajo Stock</option>
+                        <option value="critical">Crítico</option>
+                    </select>
+                    <button className="btn-filter">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z" />
+                        </svg>
+                        Filter
+                    </button>
+                </div>
+            </div>
+
+            {/* Table */}
+            {filteredMaterials.length === 0 ? (
                 <div className="empty-state fade-in">
                     <div className="empty-state-icon">
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
@@ -54,65 +158,110 @@ export default function RawMaterialsTable() {
                     <p>Agrega tu primer material usando el botón "Nuevo Material"</p>
                 </div>
             ) : (
-                <div className="inventory-grid fade-in-stagger">
-                    {materials.map(m => (
-                        <div key={m.id} className="inventory-card fade-in">
-                            <div className="inventory-thumb-wrap">
-                                <div style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    background: 'linear-gradient(135deg, rgba(255,106,0,0.2), rgba(255,148,77,0.1))',
-                                    borderRadius: '10px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: 'var(--accent)'
-                                }}>
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" />
-                                    </svg>
-                                </div>
-                            </div>
+                <>
+                    <div className="materials-table-wrapper">
+                        <table className="materials-table">
+                            <thead>
+                                <tr className="table-header-row">
+                                    <th style={{ width: '40%' }}>NOMBRE MATERIAL</th>
+                                    <th style={{ width: '15%' }}>SKU</th>
+                                    <th style={{ width: '12%' }}>CANTIDAD ACTUAL</th>
+                                    <th style={{ width: '12%' }}>STOCK MÍNIMO</th>
+                                    <th style={{ width: '12%' }}>ESTADO</th>
+                                    <th style={{ width: '9%' }}>ACCIONES</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {paginatedMaterials.map(m => {
+                                    const status = getStockStatus(m)
+                                    return (
+                                        <tr key={m.id} className="table-row fade-in">
+                                            <td>
+                                                <div className="material-cell">
+                                                    <div className="material-icon">
+                                                        {getMaterialIcon(m.name)}
+                                                    </div>
+                                                    <div>
+                                                        <div className="material-name">{m.name}</div>
+                                                        <div className="material-updated">Last updated: Oct 24, 2023</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="sku-cell">{m.category || 'N/A'}</td>
+                                            <td className="quantity-cell">{m.quantity} {m.unit}</td>
+                                            <td className="min-stock-cell">{m.minStock} {m.unit}</td>
+                                            <td>
+                                                <span className={`status-badge status-${status.class}`}>
+                                                    {status.label}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div className="action-buttons">
+                                                    <button
+                                                        className="icon-btn edit-btn"
+                                                        onClick={() => setEditing(m)}
+                                                        title="Editar"
+                                                    >
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button
+                                                        className="icon-btn delete-btn"
+                                                        onClick={() => handleDelete(m)}
+                                                        title="Eliminar"
+                                                    >
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
 
-                            <div className="inventory-info">
-                                <div className="inventory-name">{m.name}</div>
-                                <div className="inventory-meta">
-                                    <span>{m.quantity} {m.unit}</span>
-                                    <span>•</span>
-                                    <span>Mín: {m.minStock}</span>
-                                    <span>•</span>
-                                    {getStockBadge(m)}
-                                </div>
-                                {m.category && (
-                                    <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
-                                        {m.category}
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="inventory-actions">
-                                <button
-                                    className="action-btn"
-                                    onClick={() => setEditing(m)}
-                                    title="Editar"
-                                >
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                                    </svg>
-                                </button>
-                                <button
-                                    className="action-btn delete"
-                                    onClick={() => handleDelete(m)}
-                                    title="Eliminar"
-                                >
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
-                                    </svg>
-                                </button>
-                            </div>
+                    {/* Pagination */}
+                    <div className="pagination-container">
+                        <div className="pagination-info">
+                            Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredMaterials.length)} of {filteredMaterials.length} results
                         </div>
-                    ))}
-                </div>
+                        <div className="pagination-controls">
+                            <button
+                                className="pagination-btn"
+                                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                                disabled={currentPage === 1}
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+                                </svg>
+                            </button>
+
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                <button
+                                    key={page}
+                                    className={`pagination-btn ${page === currentPage ? 'active' : ''}`}
+                                    onClick={() => setCurrentPage(page)}
+                                >
+                                    {page}
+                                </button>
+                            ))}
+
+                            <button
+                                className="pagination-btn"
+                                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                                disabled={currentPage === totalPages}
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </>
             )}
         </div>
     )

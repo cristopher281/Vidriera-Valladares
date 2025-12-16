@@ -56,7 +56,7 @@ export default function InventoryTable() {
       ) : (
         <>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h3 style={{ margin: 0 }}>Inventario de Productos</h3>
+            <h3 style={{ margin: 0 }}>Productos Terminados</h3>
             <button className="btn" onClick={() => setEditing({})}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ display: 'inline', marginRight: 6 }}>
                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />

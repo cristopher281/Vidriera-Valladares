@@ -1,8 +1,10 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useProducts } from '../../context/ProductContext'
 import { useRawMaterials } from '../../context/RawMaterialsContext'
 
 export default function Dashboard() {
+  const navigate = useNavigate()
   const { products, lowStock } = useProducts()
   const { materials, lowStock: lowStockMaterials } = useRawMaterials()
 
@@ -44,7 +46,7 @@ export default function Dashboard() {
             </svg>
           </div>
           <div>
-            <div style={{ fontSize: 13, color: 'var(--muted)' }}>Valor Inventario</div>
+            <div style={{ fontSize: 13, color: 'var(--muted)' }}>Valor Total</div>
             <div style={{ fontSize: 28, fontWeight: 800, color: 'white' }}>${totalValue.toLocaleString()}</div>
           </div>
         </div>

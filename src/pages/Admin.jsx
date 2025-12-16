@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom'
 import AdminSidebar from '../components/layout/AdminSidebar'
 import Dashboard from '../components/admin/Dashboard'
 import InventoryTable from '../components/admin/InventoryTable'
+import RawMaterialsTable from '../components/admin/RawMaterialsTable'
 import { useProducts } from '../context/ProductContext'
 
 function Login({ onLogin }) {
@@ -99,6 +100,7 @@ export default function Admin() {
           <Route index element={<Dashboard />} />
           <Route path="products" element={<InventoryTable />} />
           <Route path="inventory" element={<InventoryTable />} />
+          <Route path="materials" element={<RawMaterialsTable />} />
           <Route path="config" element={<div className="card fade-in">Configuración del sitio (próximamente)</div>} />
         </Routes>
 
