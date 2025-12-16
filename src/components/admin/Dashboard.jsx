@@ -1,8 +1,10 @@
 import React from 'react'
 import { useProducts } from '../../context/ProductContext'
+import { useRawMaterials } from '../../context/RawMaterialsContext'
 
 export default function Dashboard() {
   const { products, lowStock } = useProducts()
+  const { materials, lowStock: lowStockMaterials } = useRawMaterials()
 
   const totalValue = products.reduce((sum, p) => sum + (p.price * p.stock), 0)
 
@@ -44,6 +46,30 @@ export default function Dashboard() {
           <div>
             <div style={{ fontSize: 13, color: 'var(--muted)' }}>Valor Inventario</div>
             <div style={{ fontSize: 28, fontWeight: 800, color: 'white' }}>${totalValue.toLocaleString()}</div>
+          </div>
+        </div>
+
+        <div className="metric-card fade-in">
+          <div className="metric-icon" style={{ background: 'linear-gradient(135deg,#a78bfa,#8b5cf6)' }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
+            </svg>
+          </div>
+          <div>
+            <div style={{ fontSize: 13, color: 'var(--muted)' }}>Materiales Crudos</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: 'white' }}>{materials.length}</div>
+          </div>
+        </div>
+
+        <div className="metric-card fade-in">
+          <div className="metric-icon" style={{ background: 'linear-gradient(135deg,#fbbf24,#f59e0b)' }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
+            </svg>
+          </div>
+          <div>
+            <div style={{ fontSize: 13, color: 'var(--muted)' }}>Materiales Bajo Stock</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: lowStockMaterials.length ? '#fbbf24' : '#7ee787' }}>{lowStockMaterials.length}</div>
           </div>
         </div>
 
