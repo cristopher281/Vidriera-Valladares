@@ -25,7 +25,7 @@ export default function Contact() {
             <section className="container" style={{ padding: '3rem 0' }}>
                 <h1 style={{ textAlign: 'center', marginBottom: 32 }}>Contáctenos</h1>
 
-                <div className="grid" style={{ gridTemplateColumns: '1.2fr 1fr', gap: 32, alignItems: 'start' }}>
+                <div className="grid" style={{ gap: 32, alignItems: 'start' }}>
 
                     {/* Contact Form */}
                     <div className="form-card">

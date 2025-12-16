@@ -57,7 +57,7 @@ export default function About() {
 
             {/* Mission, Vision, Values */}
             <section className="container" style={{ padding: '2rem 0' }}>
-                <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 24 }}>
+                <div className="grid" style={{ gap: 24 }}>
                     {features.map(f => (
                         <div className="card" key={f.title} style={{ textAlign: 'center' }}>
                             {React.createElement(iconMap[f.icon], {
@@ -73,7 +73,7 @@ export default function About() {
             {/* Why Choose Us */}
             <section className="container" style={{ padding: '2rem 0' }}>
                 <h2 style={{ textAlign: 'center', marginBottom: 24 }}>¿Por qué elegirnos?</h2>
-                <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+                <div className="grid" style={{ gap: 24 }}>
                     <div className="card">
                         <h4>✓ Experiencia Comprobada</h4>
                         <p style={{ color: '#475569' }}>Más de 500 proyectos exitosos en todo el país</p>
