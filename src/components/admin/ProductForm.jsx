@@ -1,18 +1,18 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { fileToBase64, compressImage } from '../../utils/storage'
 
-export default function ProductForm({initial, onSave, onCancel}){
-  const [form, setForm] = useState({name:'',price:0,stock:0,category:'Vidrio templado',description:'',img:''})
+export default function ProductForm({ initial, onSave, onCancel }) {
+  const [form, setForm] = useState({ name: '', price: 0, stock: 0, category: 'Vidrio templado', description: '', img: '' })
   const [dragOver, setDragOver] = useState(false)
   const fileInputRef = useRef()
 
-  useEffect(()=>{ if(initial) setForm(initial) },[initial])
+  useEffect(() => { if (initial) setForm(initial) }, [initial])
 
   const handleFileObject = async (f) => {
-    if(!f) return
+    if (!f) return
     const b = await fileToBase64(f)
-    const compressed = await compressImage(b,800)
-    setForm(prev=>({...prev,img:compressed}))
+    const compressed = await compressImage(b, 800)
+    setForm(prev => ({ ...prev, img: compressed }))
   }
 
   const handleFile = async (e) => {
@@ -21,68 +21,142 @@ export default function ProductForm({initial, onSave, onCancel}){
   }
 
   const onDrop = async (e) => {
-    e.preventDefault(); setDragOver(false)
+    e.preventDefault()
+    setDragOver(false)
     const f = e.dataTransfer.files && e.dataTransfer.files[0]
     await handleFileObject(f)
   }
 
+  const removeImage = () => {
+    setForm(prev => ({ ...prev, img: '' }))
+  }
+
   const submit = (e) => {
     e.preventDefault()
-    // normalize numeric fields
-    const payload = {...form, price: Number(form.price||0), stock: Number(form.stock||0)}
+    const payload = { ...form, price: Number(form.price || 0), stock: Number(form.stock || 0) }
     onSave(payload)
   }
 
   return (
-    <form onSubmit={submit} style={{display:'grid',gap:12}}>
-      <div>
-        <label className="form-label">Imagen</label>
+    <form onSubmit={submit}>
+      <div className="form-section">
+        <div className="form-section-title">Imagen del Producto</div>
         <div
-          onDragOver={(e)=>{e.preventDefault(); setDragOver(true)}}
-          onDragLeave={()=>setDragOver(false)}
+          className={`drag-drop-area ${dragOver ? 'drag-over' : ''}`}
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
+          onDragLeave={() => setDragOver(false)}
           onDrop={onDrop}
-          onClick={()=>fileInputRef.current && fileInputRef.current.click()}
-          className="card"
-          style={{border: `2px dashed ${dragOver? 'var(--accent)': 'rgba(255,255,255,0.06)'}`, padding:12, borderRadius:8, cursor:'pointer', display:'flex',alignItems:'center',gap:12}}
+          onClick={() => fileInputRef.current && fileInputRef.current.click()}
         >
-          <div style={{flex:1,color:'var(--muted)'}}>{form.img? 'Haz clic o arrastra para reemplazar la imagen' : 'Arrastra una imagen aquí o haz clic para subir'}</div>
-          <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFile} style={{display:'none'}} />
+          <div className="drag-drop-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+            </svg>
+          </div>
+          <div className="drag-drop-text">
+            <strong>{form.img ? 'Cambiar imagen' : 'Subir imagen'}</strong>
+            Arrastra una imagen aquí o haz clic para seleccionar
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFile}
+            style={{ display: 'none' }}
+          />
         </div>
-        {form.img && <div style={{display:'flex',alignItems:'center',gap:12,marginTop:8}}>
-          <img src={form.img} alt="preview" style={{width:160,borderRadius:8,boxShadow:'var(--card-shadow)'}} />
-          <div style={{color:'var(--muted)'}}>Vista previa de la imagen seleccionada</div>
-        </div>}
+
+        {form.img && (
+          <div className="image-preview-wrap">
+            <img src={form.img} alt="preview" className="image-preview" />
+            <button
+              type="button"
+              className="remove-image-btn"
+              onClick={removeImage}
+              title="Eliminar imagen"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
 
-      <div className="form-group floating">
-        <input className="input" placeholder=" " value={form.name} onChange={e=>setForm({...form,name:e.target.value})} />
-        <label className="form-label">Nombre</label>
-      </div>
-
-      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
-        <div className="form-group floating">
-          <input className="input" type="number" placeholder=" " value={form.price} onChange={e=>setForm({...form,price:e.target.value})} />
-          <label className="form-label">Precio</label>
+      <div className="form-section">
+        <div className="form-section-title">Información Básica</div>
+        <div className="form-group">
+          <label className="form-label">Nombre del Producto</label>
+          <input
+            className="input"
+            placeholder="Ej: Espejo rectangular 60x80cm"
+            value={form.name}
+            onChange={e => setForm({ ...form, name: e.target.value })}
+            required
+          />
         </div>
-        <div className="form-group floating">
-          <input className="input" type="number" placeholder=" " value={form.stock} onChange={e=>setForm({...form,stock:e.target.value})} />
-          <label className="form-label">Stock</label>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label className="form-label">Precio ($)</label>
+            <input
+              className="input"
+              type="number"
+              placeholder="0.00"
+              value={form.price}
+              onChange={e => setForm({ ...form, price: e.target.value })}
+              min="0"
+              step="0.01"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Stock (unidades)</label>
+            <input
+              className="input"
+              type="number"
+              placeholder="0"
+              value={form.stock}
+              onChange={e => setForm({ ...form, stock: e.target.value })}
+              min="0"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Categoría</label>
+          <input
+            className="input"
+            placeholder="Ej: Vidrio templado, Espejo, Ventana"
+            value={form.category}
+            onChange={e => setForm({ ...form, category: e.target.value })}
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Descripción</label>
+          <textarea
+            className="textarea"
+            placeholder="Describe el producto, dimensiones, características especiales..."
+            value={form.description}
+            onChange={e => setForm({ ...form, description: e.target.value })}
+            rows="4"
+          />
         </div>
       </div>
 
-      <div className="form-group floating">
-        <input className="input" placeholder=" " value={form.category} onChange={e=>setForm({...form,category:e.target.value})} />
-        <label className="form-label">Categoría</label>
-      </div>
-
-      <div className="form-group">
-        <textarea className="textarea" placeholder=" " value={form.description} onChange={e=>setForm({...form,description:e.target.value})} />
-        <label className="form-label">Descripción</label>
-      </div>
-
-      <div style={{display:'flex',gap:8}}>
-        <button className="btn" type="submit">Guardar</button>
-        <button type="button" className="btn-secondary" onClick={onCancel}>Cancelar</button>
+      <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+        <button type="button" className="btn-secondary" onClick={onCancel}>
+          Cancelar
+        </button>
+        <button className="btn" type="submit">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ display: 'inline', marginRight: 6 }}>
+            <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
+          </svg>
+          Guardar
+        </button>
       </div>
     </form>
   )
