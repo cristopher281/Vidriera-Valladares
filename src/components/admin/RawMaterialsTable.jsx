@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useRawMaterials } from '../../context/RawMaterialsContext'
 import RawMaterialForm from './RawMaterialForm'
 
@@ -8,7 +9,16 @@ export default function RawMaterialsTable() {
     const [searchTerm, setSearchTerm] = useState('')
     const [statusFilter, setStatusFilter] = useState('all')
     const [currentPage, setCurrentPage] = useState(1)
+    const [searchParams, setSearchParams] = useSearchParams()
     const itemsPerPage = 5
+
+    // Check URL params on mount and update filter
+    useEffect(() => {
+        const filterType = searchParams.get('filter')
+        if (filterType === 'low-stock') {
+            setStatusFilter('low')
+        }
+    }, [searchParams])
 
     const save = (m) => {
         if (m.id) updateMaterial(m.id, m)
@@ -79,6 +89,11 @@ export default function RawMaterialsTable() {
         return status.class === statusFilter
     })
 
+    const clearFilter = () => {
+        setStatusFilter('all')
+        setSearchParams({})
+    }
+
     // Pagination
     const totalPages = Math.ceil(filteredMaterials.length / itemsPerPage)
     const startIndex = (currentPage - 1) * itemsPerPage
@@ -108,6 +123,23 @@ export default function RawMaterialsTable() {
                     <div className="modal-card" onClick={e => e.stopPropagation()}>
                         <h3 style={{ marginTop: 0 }}>{editing.id ? 'Editar Material' : 'Nuevo Material'}</h3>
                         <RawMaterialForm initial={editing} onSave={save} onCancel={() => setEditing(null)} />
+                    </div>
+                </div>
+            )}
+
+            {/* Filter Active Indicator */}
+            {searchParams.get('filter') === 'low-stock' && (
+                <div className="card fade-in" style={{ marginBottom: '1.5rem', padding: '1rem', background: 'linear-gradient(135deg,rgba(251,191,36,0.1),rgba(245,158,11,0.05))', border: '1px solid rgba(251,191,36,0.3)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#fbbf24">
+                                <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
+                            </svg>
+                            <span style={{ color: '#fbbf24', fontWeight: 600 }}>Mostrando solo materiales con bajo stock</span>
+                        </div>
+                        <button className="btn-secondary" onClick={clearFilter} style={{ padding: '6px 12px', fontSize: 14 }}>
+                            Mostrar Todos
+                        </button>
                     </div>
                 </div>
             )}

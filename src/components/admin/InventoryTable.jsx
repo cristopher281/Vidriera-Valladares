@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useProducts } from '../../context/ProductContext'
 import ProductForm from './ProductForm'
 import RawMaterialsTable from './RawMaterialsTable'
@@ -7,6 +8,7 @@ export default function InventoryTable() {
   const { products, deleteProduct, updateProduct, addProduct } = useProducts()
   const [editing, setEditing] = useState(null)
   const [activeTab, setActiveTab] = useState('products') // 'products' or 'materials'
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const save = (p) => {
     if (p.id) updateProduct(p.id, p)
@@ -24,6 +26,19 @@ export default function InventoryTable() {
     if (stock === 0) return <span className="badge out">Agotado</span>
     if (stock < 10) return <span className="badge low">Bajo</span>
     return <span className="badge ok">Disponible</span>
+  }
+
+  // Filter products based on URL params
+  const filterType = searchParams.get('filter')
+  const filteredProducts = useMemo(() => {
+    if (filterType === 'low-stock') {
+      return products.filter(p => p.stock < 10)
+    }
+    return products
+  }, [products, filterType])
+
+  const clearFilter = () => {
+    setSearchParams({})
   }
 
   return (
@@ -65,6 +80,22 @@ export default function InventoryTable() {
             </button>
           </div>
 
+          {filterType === 'low-stock' && (
+            <div className="card fade-in" style={{ marginBottom: '1.5rem', padding: '1rem', background: 'linear-gradient(135deg,rgba(251,191,36,0.1),rgba(245,158,11,0.05))', border: '1px solid rgba(251,191,36,0.3)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#fbbf24">
+                    <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
+                  </svg>
+                  <span style={{ color: '#fbbf24', fontWeight: 600 }}>Mostrando solo productos con bajo stock</span>
+                </div>
+                <button className="btn-secondary" onClick={clearFilter} style={{ padding: '6px 12px', fontSize: 14 }}>
+                  Mostrar Todos
+                </button>
+              </div>
+            </div>
+          )}
+
           {editing && (
             <div className="card fade-in" style={{ marginBottom: '1.5rem' }}>
               <h4 style={{ marginTop: 0 }}>{editing.id ? 'Editar Producto' : 'Nuevo Producto'}</h4>
@@ -72,7 +103,7 @@ export default function InventoryTable() {
             </div>
           )}
 
-          {products.length === 0 ? (
+          {filteredProducts.length === 0 ? (
             <div className="empty-state fade-in">
               <div className="empty-state-icon">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
@@ -84,7 +115,7 @@ export default function InventoryTable() {
             </div>
           ) : (
             <div className="inventory-grid fade-in-stagger">
-              {products.map(p => (
+              {filteredProducts.map(p => (
                 <div key={p.id} className="inventory-card fade-in">
                   <div className="inventory-thumb-wrap">
                     <img

@@ -99,7 +99,11 @@ export default function Contact() {
                                     <div style={{ fontSize: '1.5rem' }}>📍</div>
                                     <div>
                                         <div style={{ fontWeight: 600 }}>Dirección</div>
-                                        <div style={{ color: '#475569' }}>Av. Principal 1234<br />Ciudad, Provincia</div>
+                                        <div style={{ color: '#475569' }}>
+                                            <a href="https://maps.app.goo.gl/wSVUQH52gTp8iDnQA" target="_blank" rel="noopener noreferrer" style={{ color: '#3b82f6', textDecoration: 'none' }}>
+                                                Ver ubicación en Google Maps
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -149,7 +153,7 @@ export default function Contact() {
             <section className="container" style={{ padding: '2rem 0' }}>
                 <div className="card" style={{ padding: 0, overflow: 'hidden', height: 400 }}>
                     <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3284.016888894397!2d-58.38375908477016!3d-34.60373098045944!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bccacb9f8ff113%3A0x22fd08da6711928d!2sObelisco!5e0!3m2!1ses!2sar!4v1234567890"
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3406.2586669767544!2d-64.26278532442795!3d-31.381693674287953!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9432995e98597b91%3A0xa601043dc9e6b80d!2sVIDRIER%C3%8DA%20VALLADARES!5e0!3m2!1ses!2sar!4v1734325000000"
                         width="100%"
                         height="100%"
                         style={{ border: 0 }}
