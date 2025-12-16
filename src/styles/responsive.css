@@ -203,6 +203,122 @@ body.mobile-menu-open {
     object-fit: cover;
   }
 
+  /* Product cards: better spacing and badge behavior */
+  .inventory-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .inventory-card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--card-shadow);
+    border-radius: 12px;
+    padding: 12px;
+    align-items: flex-start;
+    position: relative;
+  }
+
+  .inventory-thumb-wrap {
+    flex: 0 0 84px;
+    width: 84px;
+    height: 84px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .inventory-thumb {
+    width: 84px;
+    height: 84px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  .inventory-info {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .inventory-name {
+    font-weight: 700;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .inventory-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    color: var(--muted-2);
+    font-size: 13px;
+  }
+
+  .inventory-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
+
+  .action-btn {
+    background: transparent;
+    border: 0;
+    color: var(--muted);
+    padding: 8px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .action-btn:hover {
+    background: rgba(255,255,255,0.02);
+    color: white;
+  }
+
+  .action-btn.delete {
+    color: #ff9aa2;
+  }
+
+  /* Ensure badges don't overlap and are inline */
+  .badge {
+    position: relative;
+    display: inline-block;
+    margin: 0;
+  }
+
+  /* Two columns for small phones in landscape */
+  @media (min-width: 420px) and (max-width: 768px) {
+    .inventory-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 360px) {
+    .inventory-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .inventory-thumb-wrap,
+    .inventory-thumb {
+      width: 64px;
+      height: 64px;
+    }
+
+    .inventory-name {
+      font-size: 14px;
+    }
+  }
+
   /* Responsive tables: stack table rows into cards */
   .materials-table-wrapper {
     overflow: hidden;
