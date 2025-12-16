@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Routes, Route, useNavigate } from 'react-router-dom'
 import AdminSidebar from '../components/layout/AdminSidebar'
 import Dashboard from '../components/admin/Dashboard'
 import InventoryTable from '../components/admin/InventoryTable'
@@ -23,8 +24,9 @@ function Login({onLogin}){
 export default function Admin(){
   const [auth, setAuth] = useState(!!localStorage.getItem('vv_auth'))
   const { products } = useProducts()
+  const nav = useNavigate()
 
-  const logout = ()=>{ localStorage.removeItem('vv_auth'); setAuth(false) }
+  const logout = ()=>{ localStorage.removeItem('vv_auth'); setAuth(false); nav('/') }
 
   if(!auth) return <Login onLogin={()=>setAuth(true)} />
 
@@ -39,10 +41,14 @@ export default function Admin(){
             <button onClick={logout}>Cerrar sesión</button>
           </div>
         </div>
-        <Dashboard />
-        <div style={{marginTop:24}}>
-          <InventoryTable />
-        </div>
+
+        <Routes>
+          <Route index element={<Dashboard />} />
+          <Route path="products" element={<InventoryTable />} />
+          <Route path="inventory" element={<InventoryTable />} />
+          <Route path="config" element={<div className="card">Configuración del sitio (próximamente)</div>} />
+        </Routes>
+
       </main>
     </div>
   )
