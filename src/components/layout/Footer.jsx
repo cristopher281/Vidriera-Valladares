@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { FiMapPin, FiPhone, FiMail, FiClock } from 'react-icons/fi'
+import { FiMapPin, FiPhone, FiMail, FiClock, FiShield } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa'
 
 export default function Footer() {
@@ -68,6 +68,13 @@ export default function Footer() {
               <FaWhatsapp style={{ color: '#25D366' }} />
               WhatsApp
             </a>
+          </div>
+
+          <div>
+            <Link to="/admin" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: 'var(--muted-bg)', color: 'var(--accent)', borderRadius: 6, textDecoration: 'none', border: '1px solid var(--accent)', transition: 'all 0.3s ease', opacity: 0.8 }}>
+              <FiShield style={{ minWidth: 20, minHeight: 20 }} />
+              Administración
+            </Link>
           </div>
         </div>
       </div>
