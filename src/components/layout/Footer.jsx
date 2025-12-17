@@ -12,7 +12,7 @@ export default function Footer() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 20, flexWrap: 'wrap' }}>
           <div>
             <h4>Vidriería Valladares</h4>
-            <p>Calidad en vidrio y aluminio.</p>
+            <p>Calidad en vidrio y aluminio.</p>en la p
           </div>
 
           <div>
