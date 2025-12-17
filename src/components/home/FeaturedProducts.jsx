@@ -11,7 +11,7 @@ export default function FeaturedProducts() {
   const featuredGlass = getFeaturedProducts()
   const featuredWood = getFeaturedWoodProducts()
 
-  // Combinar productos de vidrio y madera, agregando un campo de tipo
+  // Combinar productos de vidrio y madera
   const allFeatured = [
     ...featuredGlass.map(p => ({ ...p, productType: 'glass' })),
     ...featuredWood.map(p => ({ ...p, productType: 'wood' }))
@@ -41,34 +41,13 @@ export default function FeaturedProducts() {
                 alt={p.name}
               />
 
-              {/* Badge de tipo de producto - SIN EMOJI */}
-              <div style={{
-                position: 'absolute',
-                top: '12px',
-                left: '12px',
-                padding: '5px 12px',
-                borderRadius: '6px',
-                background: p.productType === 'wood'
-                  ? 'linear-gradient(135deg, rgba(139, 90, 60, 0.95), rgba(160, 110, 80, 0.95))'
-                  : 'linear-gradient(135deg, rgba(59, 130, 246, 0.95), rgba(99, 179, 237, 0.95))',
-                color: 'white',
-                fontSize: '12px',
-                fontWeight: '600',
-                letterSpacing: '0.3px',
-                backdropFilter: 'blur(8px)',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-                zIndex: 1
-              }}>
-                {p.productType === 'wood' ? 'Madera' : 'Vidrio'}
-              </div>
-
               <div style={{ marginTop: '8px' }}>
                 <h4 style={{ margin: '0 0 6px 0' }}>{p.name}</h4>
                 <p style={{ color: 'var(--muted)', fontSize: '14px', margin: '0 0 12px 0' }}>
                   {p.description}
                 </p>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
                   <div>
                     <div style={{ fontWeight: 700, fontSize: '18px', color: 'var(--primary)' }}>
                       ${p.price}
@@ -82,8 +61,7 @@ export default function FeaturedProducts() {
                   </div>
 
                   <button
-                    className="btn"
-                    style={{ padding: '8px 16px', fontSize: '14px' }}
+                    className="btn btn-sm-mobile"
                     onClick={(e) => { e.stopPropagation(); setSelectedProduct(p) }}
                   >
                     Ver detalles
