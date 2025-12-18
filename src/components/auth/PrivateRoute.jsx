@@ -1,0 +1,43 @@
+import React from 'react'
+import { Navigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
+
+export default function PrivateRoute({ children }) {
+    const { user, loading } = useAuth()
+
+    // Mostrar loading mientras verifica autenticación
+    if (loading) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                background: 'linear-gradient(135deg, #0a1628 0%, #1a2332 100%)'
+            }}>
+                <div style={{ textAlign: 'center' }}>
+                    <div className="spinner" style={{
+                        width: 48,
+                        height: 48,
+                        border: '4px solid rgba(59, 130, 246, 0.2)',
+                        borderTop: '4px solid #3b82f6',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite',
+                        margin: '0 auto 16px'
+                    }} />
+                    <div style={{ color: 'var(--muted)', fontSize: 14 }}>
+                        Verificando autenticación...
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    // Si no está autenticado, redirecciona al login
+    if (!user) {
+        return <Navigate to="/admin" replace />
+    }
+
+    // Si está autenticado, muestra el contenido protegido
+    return children
+}

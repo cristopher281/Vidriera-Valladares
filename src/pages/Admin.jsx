@@ -5,76 +5,45 @@ import Dashboard from '../components/admin/Dashboard'
 import InventoryTable from '../components/admin/InventoryTable'
 import RawMaterialsTable from '../components/admin/RawMaterialsTable'
 import WoodInventoryTable from '../components/admin/WoodInventoryTable'
-import { useProducts } from '../context/ProductContext'
-
-function Login({ onLogin }) {
-  const [user, setUser] = useState('')
-  const [pass, setPass] = useState('')
-  const [error, setError] = useState('')
-
-  const submit = (e) => {
-    e.preventDefault()
-    setError('')
-    if (user === 'admin' && pass === 'admin') {
-      localStorage.setItem('vv_auth', '1')
-      onLogin()
-    } else {
-      setError('Credenciales inválidas. Usa: admin/admin')
-    }
-  }
-
-  return (
-    <div className="login-container">
-      <div className="login-card fade-in">
-        <div className="login-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
-            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" />
-          </svg>
-        </div>
-        <h3>Administración</h3>
-        <p className="subtitle">Vidriería Valladares</p>
-        <form onSubmit={submit} style={{ display: 'grid', gap: 16 }}>
-          <div className="form-group">
-            <label className="form-label">Usuario</label>
-            <input
-              className="input"
-              placeholder="admin"
-              value={user}
-              onChange={e => setUser(e.target.value)}
-              autoFocus
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Contraseña</label>
-            <input
-              className="input"
-              placeholder="••••••"
-              type="password"
-              value={pass}
-              onChange={e => setPass(e.target.value)}
-            />
-          </div>
-          {error && <div style={{ color: '#ff6b6b', fontSize: 14, textAlign: 'center' }}>{error}</div>}
-          <button className="btn btn-large" type="submit">Iniciar Sesión</button>
-        </form>
-      </div>
-    </div>
-  )
-}
+import LoginForm from '../components/auth/LoginForm'
+import PhoneLogin from '../components/auth/PhoneLogin'
+import ForgotPassword from '../components/auth/ForgotPassword'
+import { useAuth } from '../context/AuthContext'
 
 export default function Admin() {
-  const [auth, setAuth] = useState(!!localStorage.getItem('vv_auth'))
-  const { products } = useProducts()
+  const { user, logout } = useAuth()
+  const [loginMethod, setLoginMethod] = useState('email') // 'email', 'phone', 'forgot'
   const nav = useNavigate()
 
-  const logout = () => {
-    localStorage.removeItem('vv_auth')
-    setAuth(false)
+  const handleLogout = async () => {
+    await logout()
     nav('/')
   }
 
-  if (!auth) return <Login onLogin={() => setAuth(true)} />
+  // Si no está autenticado, mostrar pantallas de login
+  if (!user) {
+    if (loginMethod === 'phone') {
+      return (
+        <PhoneLogin
+          onSwitchToEmail={() => setLoginMethod('email')}
+          onBack={() => setLoginMethod('email')}
+        />
+      )
+    }
 
+    if (loginMethod === 'forgot') {
+      return <ForgotPassword onBack={() => setLoginMethod('email')} />
+    }
+
+    return (
+      <LoginForm
+        onSwitchToPhone={() => setLoginMethod('phone')}
+        onSwitchToForgot={() => setLoginMethod('forgot')}
+      />
+    )
+  }
+
+  // Si está autenticado, mostrar el panel admin
   return (
     <div className="admin-layout">
       <AdminSidebar />
@@ -88,7 +57,7 @@ export default function Admin() {
               </svg>
               Ver Tienda
             </button>
-            <button className="btn-secondary" onClick={logout}>
+            <button className="btn-secondary" onClick={handleLogout}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ display: 'inline', marginRight: 6 }}>
                 <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" />
               </svg>
