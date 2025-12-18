@@ -5,6 +5,7 @@ export default function ProductForm({ initial, onSave, onCancel }) {
   const [form, setForm] = useState({ name: '', price: 0, stock: 0, category: 'Vidrio templado', description: '', img: '' })
   const [selectedFile, setSelectedFile] = useState(null)
   const [dragOver, setDragOver] = useState(false)
+  const [saving, setSaving] = useState(false)
   const fileInputRef = useRef()
 
   useEffect(() => { if (initial) setForm(initial) }, [initial])
@@ -39,9 +40,9 @@ export default function ProductForm({ initial, onSave, onCancel }) {
   const submit = async (e) => {
     e.preventDefault()
     let imgUrl = form.img
-
-    // If img is a data URL (compressed preview), upload it to Firebase Storage
+    setSaving(true)
     try {
+      // If img is a data URL (compressed preview), upload it to Firebase Storage
       if (form.img && form.img.startsWith('data:')) {
         // dynamic import of storage helper to avoid loading storage in non-Firebase envs
         const { uploadBase64 } = await import('../../firebase/storage')
@@ -51,12 +52,18 @@ export default function ProductForm({ initial, onSave, onCancel }) {
         const path = `products/${safeName}_${timestamp}.${ext}`
         imgUrl = await uploadBase64(form.img, path)
       }
-    } catch (err) {
-      console.error('Error uploading image:', err)
-    }
 
-    const payload = { ...form, img: imgUrl, price: Number(form.price || 0), stock: Number(form.stock || 0) }
-    onSave(payload)
+      const payload = { ...form, img: imgUrl, price: Number(form.price || 0), stock: Number(form.stock || 0) }
+      // Esperamos a que el parent guarde y, si falla, se lanzará excepción
+      await onSave(payload)
+    } catch (err) {
+      console.error('Error uploading or saving product:', err)
+      // Mostrar error visible al usuario
+      alert('Error al guardar el producto: ' + (err && err.message ? err.message : err))
+      return
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -221,11 +228,11 @@ export default function ProductForm({ initial, onSave, onCancel }) {
         <button type="button" className="btn-secondary" onClick={onCancel}>
           Cancelar
         </button>
-        <button className="btn" type="submit">
+        <button className="btn" type="submit" disabled={saving}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ display: 'inline', marginRight: 6 }}>
             <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
           </svg>
-          Guardar
+          {saving ? 'Guardando...' : 'Guardar'}
         </button>
       </div>
     </form>

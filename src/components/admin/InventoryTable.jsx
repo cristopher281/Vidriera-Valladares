@@ -10,10 +10,16 @@ export default function InventoryTable() {
   const [activeTab, setActiveTab] = useState('products') // 'products' or 'materials'
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const save = (p) => {
-    if (p.id) updateProduct(p.id, p)
-    else addProduct(p)
-    setEditing(null)
+  const save = async (p) => {
+    try {
+      if (p.id) await updateProduct(p.id, p)
+      else await addProduct(p)
+      setEditing(null)
+    } catch (err) {
+      console.error('Error saving product:', err)
+      // Propagar el error para que el formulario lo capture y muestre al usuario
+      throw err
+    }
   }
 
   const handleDelete = (product) => {
