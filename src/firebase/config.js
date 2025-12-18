@@ -10,13 +10,13 @@ import { getAuth } from 'firebase/auth'
 // 3) hardcoded fallbacks (convenience for quick dev).
 
 let firebaseConfig = {
-  apiKey: import.meta?.env?.VITE_FIREBASE_API_KEY || "AIzaSyATQXjmo0xv7-YOuIkHEddGO-q4CLgGrM8",
-  authDomain: import.meta?.env?.VITE_FIREBASE_AUTH_DOMAIN || "vidrieria-d59d3.firebaseapp.com",
-  projectId: import.meta?.env?.VITE_FIREBASE_PROJECT_ID || "vidrieria-d59d3",
-  storageBucket: import.meta?.env?.VITE_FIREBASE_STORAGE_BUCKET || "vidrieria-d59d3.firebasestorage.app",
-  messagingSenderId: import.meta?.env?.VITE_FIREBASE_MESSAGING_SENDER_ID || "983598785830",
-  appId: import.meta?.env?.VITE_FIREBASE_APP_ID || "1:983598785830:web:bf756e911e407ffdcbcde7",
-  measurementId: import.meta?.env?.VITE_FIREBASE_MEASUREMENT_ID || "G-2T9PFQ2WDH"
+  apiKey: (import.meta.env && import.meta.env.VITE_FIREBASE_API_KEY) || "AIzaSyATQXjmo0xv7-YOuIkHEddGO-q4CLgGrM8",
+  authDomain: (import.meta.env && import.meta.env.VITE_FIREBASE_AUTH_DOMAIN) || "vidrieria-d59d3.firebaseapp.com",
+  projectId: (import.meta.env && import.meta.env.VITE_FIREBASE_PROJECT_ID) || "vidrieria-d59d3",
+  storageBucket: (import.meta.env && import.meta.env.VITE_FIREBASE_STORAGE_BUCKET) || "vidrieria-d59d3.firebasestorage.app",
+  messagingSenderId: (import.meta.env && import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID) || "983598785830",
+  appId: (import.meta.env && import.meta.env.VITE_FIREBASE_APP_ID) || "1:983598785830:web:bf756e911e407ffdcbcde7",
+  measurementId: (import.meta.env && import.meta.env.VITE_FIREBASE_MEASUREMENT_ID) || "G-2T9PFQ2WDH"
 }
 
 // If a local credentials file exists, prefer its values. This allows developers to
