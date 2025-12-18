@@ -1,9 +1,10 @@
 import React from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
 export default function PrivateRoute({ children }) {
     const { user, loading } = useAuth()
+    const location = useLocation()
 
     // Mostrar loading mientras verifica autenticación
     if (loading) {
@@ -33,8 +34,13 @@ export default function PrivateRoute({ children }) {
         )
     }
 
-    // Si no está autenticado, redirecciona al login
+    // Si no está autenticado, permitimos renderizar el componente en la ruta base /admin
+    // (que contiene el formulario de login). Para rutas anidadas protegidas, redirigir.
     if (!user) {
+        const isAdminBase = location.pathname === '/admin' || location.pathname === '/admin/'
+        if (isAdminBase) {
+            return children
+        }
         return <Navigate to="/admin" replace />
     }
 
