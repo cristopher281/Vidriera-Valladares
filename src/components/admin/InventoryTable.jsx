@@ -125,7 +125,7 @@ export default function InventoryTable() {
                 <div key={p.id} className="inventory-card fade-in">
                   <div className="inventory-thumb-wrap">
                     <img
-                      src={p.img || 'https://via.placeholder.com/160x120'}
+                      src={p.img ? encodeURI(p.img) : 'https://via.placeholder.com/160x120'}
                       alt={p.name}
                       className="inventory-thumb"
                     />

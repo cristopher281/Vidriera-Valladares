@@ -3,7 +3,11 @@ import React from 'react'
 export default function ProductCard({ product, onDetailsClick }) {
   return (
     <div className="card">
-      <img className="product-img" src={product.img || 'https://via.placeholder.com/400x300?text=Vidrio'} alt={product.name} />
+      <img
+        className="product-img"
+        src={product.img ? encodeURI(product.img) : 'https://via.placeholder.com/400x300?text=Vidrio'}
+        alt={product.name}
+      />
       <h4>{product.name}</h4>
       <p style={{ color: '#475569' }}>{product.description}</p>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>

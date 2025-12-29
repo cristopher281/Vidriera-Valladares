@@ -37,7 +37,7 @@ export default function FeaturedProducts() {
             >
               <img
                 className="product-img"
-                src={p.img || 'https://via.placeholder.com/400x300?text=Producto'}
+                src={p.img ? encodeURI(p.img) : 'https://via.placeholder.com/400x300?text=Producto'}
                 alt={p.name}
               />
 

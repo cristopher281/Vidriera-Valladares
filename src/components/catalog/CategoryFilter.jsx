@@ -1,6 +1,6 @@
 import React from 'react'
 
-const DEFAULT_CATS = ['Todo', 'Vidrio templado', 'Vidrio laminado', 'Espejos', 'Mamparas', 'Vidrio y Herraje']
+const DEFAULT_CATS = ['Todo', 'Vidrieria', 'Vidrio templado', 'Vidrio laminado', 'Espejos', 'Mamparas', 'Vidrio y Herraje']
 
 export default function CategoryFilter({ value, onChange, categories = DEFAULT_CATS }) {
   return (

@@ -1,16 +1,10 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { subscribeToCollection, addDocument, updateDocument, deleteDocument } from '../firebase/firestore'
-import { migrateToFirestore } from '../utils/migrateToFirestore'
+import { migrateToFirestore, resetMigrationFlag } from '../utils/migrateToFirestore'
+import { NEW_PRODUCTS } from '../data/products'
 
 const ProductContext = createContext()
-
-const SAMPLE = [
-  { name: 'Vidrio templado 8mm', category: 'Vidrio templado', price: 120, stock: 25, img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop', description: 'Vidrio templado de alta resistencia.', featured: true },
-  { name: 'Espejo 6mm', category: 'Espejos', price: 80, stock: 12, img: 'https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=800&auto=format&fit=crop', description: 'Espejo con bisel opcional.', featured: false },
-  { name: 'Mampara de baño', category: 'Mamparas', price: 300, stock: 6, img: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?q=80&w=800&auto=format&fit=crop', description: 'Mampara con herrajes incluidos.', featured: true },
-  { name: 'Vidrio laminado 10mm', category: 'Vidrio laminado', price: 200, stock: 4, img: 'https://images.unsplash.com/photo-1631889993959-41b4e9c6e3c5?q=80&w=800&auto=format&fit=crop', description: 'Mayor seguridad y aislamiento.', featured: false }
-]
 
 export function ProductProvider({ children }) {
   const [products, setProducts] = useState([])
@@ -23,7 +17,7 @@ export function ProductProvider({ children }) {
     const initializeProducts = async () => {
       try {
         // Intentar migrar datos de localStorage a Firestore
-        await migrateToFirestore('products', 'vv_products', SAMPLE)
+        await migrateToFirestore('products', 'vv_products', NEW_PRODUCTS)
 
         // Suscribirse a cambios en tiempo real
         unsubscribe = subscribeToCollection('products', (data) => {

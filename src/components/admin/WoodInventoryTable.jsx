@@ -60,7 +60,7 @@ export default function WoodInventoryTable() {
                         <div key={p.id} className="inventory-card fade-in">
                             <div className="inventory-thumb-wrap">
                                 <img
-                                    src={p.img || 'https://via.placeholder.com/160x120?text=Madera'}
+                                    src={p.img ? encodeURI(p.img) : 'https://via.placeholder.com/160x120?text=Madera'}
                                     alt={p.name}
                                     className="inventory-thumb"
                                 />

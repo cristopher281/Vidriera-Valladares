@@ -1,11 +1,34 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { fileToBase64, compressImage } from '../../utils/storage'
 
+// Imágenes disponibles en la carpeta public
+const PUBLIC_IMAGES = [
+  '/Imagen de WhatsApp 2025-12-17 a las 12.55.15_81f10d2b.jpg',
+  '/Imagen de WhatsApp 2025-12-17 a las 12.55.16_6c0c3a0e.jpg',
+  '/Imagen de WhatsApp 2025-12-17 a las 12.55.16_82b5bf5c.jpg',
+  '/Imagen de WhatsApp 2025-12-17 a las 12.55.16_ec6db6b9.jpg',
+  '/Imagen de WhatsApp 2025-12-17 a las 12.55.17_6583346d.jpg',
+  '/Imagen de WhatsApp 2025-12-17 a las 12.55.17_7b67cec9.jpg',
+  '/Imagen de WhatsApp 2025-12-17 a las 12.55.17_fb6e7c2d.jpg',
+  '/Imagen de WhatsApp 2025-12-17 a las 12.55.18_7ff53ef5.jpg',
+  '/Imagen de WhatsApp 2025-12-17 a las 12.55.18_90d0c279.jpg',
+  '/Imagen de WhatsApp 2025-12-17 a las 12.55.19_7d2f0892.jpg',
+  '/Imagen de WhatsApp 2025-12-17 a las 12.55.19_dda384a6.jpg',
+  '/Imagen de WhatsApp 2025-12-17 a las 12.55.19_fc3b5279.jpg',
+  '/Imagen de WhatsApp 2025-12-17 a las 12.55.19_fc8b61b7.jpg',
+  '/Imagen de WhatsApp 2025-12-17 a las 12.55.20_5bf8afde.jpg',
+  '/Imagen de WhatsApp 2025-12-17 a las 12.55.20_66e02be8.jpg',
+  '/Imagen de WhatsApp 2025-12-17 a las 12.55.20_adf3b2dd.jpg',
+  '/Imagen de WhatsApp 2025-12-17 a las 12.55.21_e623456c.jpg',
+  '/Imagen de WhatsApp 2025-12-17 a las 12.55.21_f39436ec.jpg',
+]
+
 export default function ProductForm({ initial, onSave, onCancel }) {
   const [form, setForm] = useState({ name: '', price: 0, stock: 0, category: 'Vidrio templado', description: '', img: '' })
   const [selectedFile, setSelectedFile] = useState(null)
   const [dragOver, setDragOver] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [showPublicGallery, setShowPublicGallery] = useState(false)
   const fileInputRef = useRef()
 
   useEffect(() => { if (initial) setForm(initial) }, [initial])
@@ -35,6 +58,12 @@ export default function ProductForm({ initial, onSave, onCancel }) {
   const removeImage = () => {
     setForm(prev => ({ ...prev, img: '' }))
     setSelectedFile(null)
+  }
+
+  const selectPublicImage = (imagePath) => {
+    setForm(prev => ({ ...prev, img: imagePath }))
+    setSelectedFile(null)
+    setShowPublicGallery(false)
   }
 
   const submit = async (e) => {
@@ -105,13 +134,25 @@ export default function ProductForm({ initial, onSave, onCancel }) {
               <button
                 type="button"
                 className="btn"
+                onClick={() => setShowPublicGallery(!showPublicGallery)}
+                style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M22 16V4c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2zm-11-4l2.03 2.71L16 11l4 5H8l3-4zM2 6v14c0 1.1.9 2 2 2h14v-2H4V6H2z" />
+                </svg>
+                {showPublicGallery ? 'Ocultar' : 'Seleccionar de'} galería pública
+              </button>
+
+              <button
+                type="button"
+                className="btn-secondary"
                 onClick={() => fileInputRef.current && fileInputRef.current.click()}
                 style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
+                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
                 </svg>
-                Seleccionar desde galería
+                Subir nueva imagen
               </button>
 
               {/* Hidden file inputs */}
@@ -125,6 +166,76 @@ export default function ProductForm({ initial, onSave, onCancel }) {
             </>
           )}
         </div>
+
+        {/* Public Image Gallery */}
+        {showPublicGallery && !form.img && (
+          <div style={{
+            marginTop: '16px',
+            padding: '16px',
+            background: 'rgba(59, 130, 246, 0.05)',
+            border: '1px solid rgba(59, 130, 246, 0.2)',
+            borderRadius: '8px'
+          }}>
+            <div style={{
+              marginBottom: '12px',
+              fontWeight: '600',
+              color: 'var(--primary)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M22 16V4c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2zm-11-4l2.03 2.71L16 11l4 5H8l3-4zM2 6v14c0 1.1.9 2 2 2h14v-2H4V6H2z" />
+              </svg>
+              Imágenes Disponibles ({PUBLIC_IMAGES.length})
+            </div>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+              gap: '12px',
+              maxHeight: '400px',
+              overflowY: 'auto',
+              padding: '4px'
+            }}>
+              {PUBLIC_IMAGES.map((imgPath, index) => (
+                <div
+                  key={index}
+                  onClick={() => selectPublicImage(imgPath)}
+                  style={{
+                    cursor: 'pointer',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    border: '2px solid transparent',
+                    transition: 'all 0.2s ease',
+                    aspectRatio: '1',
+                    position: 'relative',
+                    background: 'var(--bg-2)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.border = '2px solid var(--primary)'
+                    e.currentTarget.style.transform = 'scale(1.05)'
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.border = '2px solid transparent'
+                    e.currentTarget.style.transform = 'scale(1)'
+                    e.currentTarget.style.boxShadow = 'none'
+                  }}
+                >
+                  <img
+                    src={encodeURI(imgPath)}
+                    alt={`Imagen ${index + 1}`}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover'
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {form.img && (
           <div className="image-preview-wrap">
