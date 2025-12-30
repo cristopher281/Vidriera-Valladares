@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import ShareQR from './ShareQR'
 
 export default function Navbar() {
   const nav = useNavigate()
@@ -84,6 +85,7 @@ export default function Navbar() {
         </Link>
         <Link to="/about" onClick={handleLinkClick}>Nosotros</Link>
         <Link to="/contact" onClick={handleLinkClick}>Contacto</Link>
+        <ShareQR />
         <button
           className="btn"
           onClick={() => {
